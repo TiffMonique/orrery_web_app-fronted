@@ -35,6 +35,8 @@ import uranusTexture from '/images/uranus.jpg';
 import uraRingTexture from '/images/uranus_ring.png';
 import neptuneTexture from '/images/neptune.jpg';
 import plutoTexture from '/images/plutomap.jpg';
+import { createPlanet } from './funcions/planets';
+import { loadAsteroids } from './funcions/asteroids';
 
 // ******  SETUP  ******
 console.log("Create the scene");
@@ -192,17 +194,7 @@ function identifyPlanet(clickedObject) {
   return null;
 }
 
-// ******  SHOW PLANET INFO AFTER SELECTION  ******
-function showPlanetInfo(planet) {
-  var info = document.getElementById('planetInfo');
-  var name = document.getElementById('planetName');
-  var details = document.getElementById('planetDetails');
 
-  name.innerText = planet;
-  details.innerText = `Radius: ${planetData[planet].radius}\nTilt: ${planetData[planet].tilt}\nRotation: ${planetData[planet].rotation}\nOrbit: ${planetData[planet].orbit}\nDistance: ${planetData[planet].distance}\nMoons: ${planetData[planet].moons}\nInfo: ${planetData[planet].info}`;
-
-  info.style.display = 'block';
-}
 let isZoomingOut = false;
 let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 // close 'x' button function
@@ -238,114 +230,6 @@ const pointLight = new THREE.PointLight(0xFDFFD3, 1200, 400, 1.4);
 scene.add(pointLight);
 
 
-// ******  PLANET CREATION FUNCTION  ******
-function createPlanet(planetName, size, position, tilt, texture, bump, ring, atmosphere, moons) {
-
-  let material;
-  if (texture instanceof THREE.Material) {
-    material = texture;
-  }
-  else if (bump) {
-    material = new THREE.MeshPhongMaterial({
-      map: loadTexture.load(texture),
-      bumpMap: loadTexture.load(bump),
-      bumpScale: 0.7
-    });
-  }
-  else {
-    material = new THREE.MeshPhongMaterial({
-      map: loadTexture.load(texture)
-    });
-  }
-
-  const name = planetName;
-  const geometry = new THREE.SphereGeometry(size, 32, 20);
-  const planet = new THREE.Mesh(geometry, material);
-  const planet3d = new THREE.Object3D;
-  const planetSystem = new THREE.Group();
-  planetSystem.add(planet);
-  let Atmosphere;
-  let Ring;
-  planet.position.x = position;
-  planet.rotation.z = tilt * Math.PI / 180;
-
-  // add orbit path
-  const orbitPath = new THREE.EllipseCurve(
-    0, 0,            // ax, aY
-    position, position, // xRadius, yRadius
-    0, 2 * Math.PI,   // aStartAngle, aEndAngle
-    false,            // aClockwise
-    0                 // aRotation
-  );
-
-  const pathPoints = orbitPath.getPoints(100);
-  const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
-  const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.03 });
-  const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
-  orbit.rotation.x = Math.PI / 2;
-  planetSystem.add(orbit);
-
-  //add ring
-  if (ring) {
-    const RingGeo = new THREE.RingGeometry(ring.innerRadius, ring.outerRadius, 30);
-    const RingMat = new THREE.MeshStandardMaterial({
-      map: loadTexture.load(ring.texture),
-      side: THREE.DoubleSide
-    });
-    Ring = new THREE.Mesh(RingGeo, RingMat);
-    planetSystem.add(Ring);
-    Ring.position.x = position;
-    Ring.rotation.x = -0.5 * Math.PI;
-    Ring.rotation.y = -tilt * Math.PI / 180;
-  }
-
-  //add atmosphere
-  if (atmosphere) {
-    const atmosphereGeom = new THREE.SphereGeometry(size + 0.1, 32, 20);
-    const atmosphereMaterial = new THREE.MeshPhongMaterial({
-      map: loadTexture.load(atmosphere),
-      transparent: true,
-      opacity: 0.4,
-      depthTest: true,
-      depthWrite: false
-    })
-    Atmosphere = new THREE.Mesh(atmosphereGeom, atmosphereMaterial)
-
-    Atmosphere.rotation.z = 0.41;
-    planet.add(Atmosphere);
-  }
-
-  //add moons
-  if (moons) {
-    moons.forEach(moon => {
-      let moonMaterial;
-
-      if (moon.bump) {
-        moonMaterial = new THREE.MeshStandardMaterial({
-          map: loadTexture.load(moon.texture),
-          bumpMap: loadTexture.load(moon.bump),
-          bumpScale: 0.5
-        });
-      } else {
-        moonMaterial = new THREE.MeshStandardMaterial({
-          map: loadTexture.load(moon.texture)
-        });
-      }
-      const moonGeometry = new THREE.SphereGeometry(moon.size, 32, 20);
-      const moonMesh = new THREE.Mesh(moonGeometry, moonMaterial);
-      const moonOrbitDistance = size * 1.5;
-      moonMesh.position.set(moonOrbitDistance, 0, 0);
-      planetSystem.add(moonMesh);
-      moon.mesh = moonMesh;
-    });
-  }
-  //add planet system to planet3d object and to the scene
-  planet3d.add(planetSystem);
-  scene.add(planet3d);
-  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring };
-}
-
-
 // ******  LOADING OBJECTS METHOD  ******
 function loadObject(path, position, scale, callback) {
   const loader = new GLTFLoader();
@@ -362,34 +246,6 @@ function loadObject(path, position, scale, callback) {
     console.error('An error happened', error);
   });
 }
-
-// ******  ASTEROIDS  ******
-const asteroids = [];
-function loadAsteroids(path, numberOfAsteroids, minOrbitRadius, maxOrbitRadius) {
-  const loader = new GLTFLoader();
-  loader.load(path, function (gltf) {
-    gltf.scene.traverse(function (child) {
-      if (child.isMesh) {
-        for (let i = 0; i < numberOfAsteroids / 12; i++) { // Divide by 12 because there are 12 asteroids in the pack
-          const asteroid = child.clone();
-          const orbitRadius = THREE.MathUtils.randFloat(minOrbitRadius, maxOrbitRadius);
-          const angle = Math.random() * Math.PI * 2;
-          const x = orbitRadius * Math.cos(angle);
-          const y = 0;
-          const z = orbitRadius * Math.sin(angle);
-          child.receiveShadow = true;
-          asteroid.position.set(x, y, z);
-          asteroid.scale.setScalar(THREE.MathUtils.randFloat(0.8, 1.2));
-          scene.add(asteroid);
-          asteroids.push(asteroid);
-        }
-      }
-    });
-  }, undefined, function (error) {
-    console.error('An error happened', error);
-  });
-}
-
 
 // Earth day/night effect shader material
 const earthMaterial = new THREE.ShaderMaterial({
@@ -491,9 +347,13 @@ const jupiterMoons = [
 
 // ******  PLANET CREATIONS  ******
 const mercury = new createPlanet('Mercury', 2.4, 40, 0, mercuryTexture, mercuryBump);
+scene.add(mercury.planet3d);
 const venus = new createPlanet('Venus', 6.1, 65, 3, venusTexture, venusBump, null, venusAtmosphere);
+scene.add(venus.planet3d);
 const earth = new createPlanet('Earth', 6.4, 90, 23, earthMaterial, null, null, earthAtmosphere, earthMoon);
-const mars = new createPlanet('Mars', 3.4, 115, 25, marsTexture, marsBump)
+scene.add(earth.planet3d);
+const mars = new createPlanet('Mars', 3.4, 115, 25, marsTexture, marsBump);
+scene.add(mars.planet3d);
 // Load Mars moons
 marsMoons.forEach(moon => {
   loadObject(moon.modelPath, moon.position, moon.scale, function (loadedModel) {
@@ -508,19 +368,24 @@ marsMoons.forEach(moon => {
   });
 });
 
-const jupiter = new createPlanet('Jupiter', 69 / 4, 200, 3, jupiterTexture, null, null, null, jupiterMoons);
+const jupiter = new createPlanet('Jupiter', 69 / 4, 200, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
+scene.add(jupiter.planet3d);
 const saturn = new createPlanet('Saturn', 58 / 4, 270, 26, saturnTexture, null, {
   innerRadius: 18,
   outerRadius: 29,
   texture: satRingTexture
 });
+scene.add(saturn.planet3d);
 const uranus = new createPlanet('Uranus', 25 / 4, 320, 82, uranusTexture, null, {
   innerRadius: 6,
   outerRadius: 8,
   texture: uraRingTexture
 });
+scene.add(uranus.planet3d);
 const neptune = new createPlanet('Neptune', 24 / 4, 340, 28, neptuneTexture);
-const pluto = new createPlanet('Pluto', 1, 350, 57, plutoTexture)
+scene.add(neptune.planet3d);
+const pluto = new createPlanet('Pluto', 1, 350, 57, plutoTexture);
+scene.add(pluto.planet3d);
 
 // ******  PLANETS DATA  ******
 const planetData = {
@@ -724,13 +589,6 @@ function animate() {
     });
   }
 
-  // Rotate asteroids
-  asteroids.forEach(asteroid => {
-    asteroid.rotation.y += 0.0001;
-    asteroid.position.x = asteroid.position.x * Math.cos(0.0001 * settings.accelerationOrbit) + asteroid.position.z * Math.sin(0.0001 * settings.accelerationOrbit);
-    asteroid.position.z = asteroid.position.z * Math.cos(0.0001 * settings.accelerationOrbit) - asteroid.position.x * Math.sin(0.0001 * settings.accelerationOrbit);
-  });
-
   // ****** OUTLINES ON PLANETS ******
   raycaster.setFromCamera(mouse, camera);
 
@@ -776,8 +634,9 @@ function animate() {
   requestAnimationFrame(animate);
   composer.render();
 }
-loadAsteroids('/asteroids/asteroidPack.glb', 1000, 130, 160);
-loadAsteroids('/asteroids/asteroidPack.glb', 3000, 352, 370);
+
+loadAsteroids('./asteroids/asteroidPack.glb', 1000, 130, 160, scene);
+loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
 animate();
 
 window.addEventListener('mousemove', onMouseMove, false);
