@@ -12,7 +12,7 @@ import bgTexture2 from '/images/2.jpg';
 import bgTexture3 from '/images/3.jpg';
 import bgTexture4 from '/images/4.jpg';
 import sunTexture from '/images/sun.jpg';
-import mercuryTexture from '/images/mercurymap.jpg';
+import mercuryTexture from '/images/mercury.jpg';
 import mercuryBump from '/images/mercurybump.jpg';
 import venusTexture from '/images/venusmap.jpg';
 import venusBump from '/images/venusmap.jpg';
@@ -55,6 +55,7 @@ renderer.toneMapping = THREE.ACESFilmicToneMapping;
 console.log("Create an orbit control");
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
+controls.dampingFactor = 0.75;
 controls.screenSpacePanning = false;
 
 console.log("Set up texture loader");
