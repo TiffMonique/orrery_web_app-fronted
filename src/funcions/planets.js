@@ -1,7 +1,8 @@
 import * as THREE from 'three';
+import planetData from '../data/planetData.json';
 
 // ******  SHOW PLANET INFO AFTER SELECTION  ******
-function showPlanetInfo(planet) {
+export function showPlanetInfo(planet) {
   var info = document.getElementById('planetInfo');
   var name = document.getElementById('planetName');
   var details = document.getElementById('planetDetails');
