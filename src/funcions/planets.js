@@ -39,6 +39,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   const geometry = new THREE.SphereGeometry(size, 32, 20);
   const planet = new THREE.Mesh(geometry, material);
   const planet3d = new THREE.Object3D;
+  const planetOrbit3d = new THREE.Object3D;
   const planetSystem = new THREE.Group();
   planetSystem.add(planet);
   let Atmosphere;
@@ -49,7 +50,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   // add orbit path
   const orbitPath = new THREE.EllipseCurve(
     0, 0,            // ax, aY
-    position, position, // xRadius, yRadius
+    position, position+50, // xRadius, yRadius
     0, 2 * Math.PI,   // aStartAngle, aEndAngle
     false,            // aClockwise
     0                 // aRotation
@@ -60,7 +61,8 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.03 });
   const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
   orbit.rotation.x = Math.PI / 2;
-  planetSystem.add(orbit);
+  //planetSystem.add(orbit);
+  planetOrbit3d.add(orbit);
 
   //add ring
   if (ring) {
@@ -118,5 +120,5 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   }
   //add planet system to planet3d object and to the scene
   planet3d.add(planetSystem);
-  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring };
+  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, planetOrbit3d };
 }

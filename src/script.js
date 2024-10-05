@@ -349,12 +349,16 @@ const jupiterMoons = [
 // ******  PLANET CREATIONS  ******
 const mercury = new createPlanet('Mercury', 2.4, 40, 0, mercuryTexture, mercuryBump);
 scene.add(mercury.planet3d);
+scene.add(mercury.planetOrbit3d);
 const venus = new createPlanet('Venus', 6.1, 65, 3, venusTexture, venusBump, null, venusAtmosphere);
 scene.add(venus.planet3d);
+scene.add(venus.planetOrbit3d);
 const earth = new createPlanet('Earth', 6.4, 90, 23, earthMaterial, null, null, earthAtmosphere, earthMoon);
 scene.add(earth.planet3d);
+scene.add(earth.planetOrbit3d);
 const mars = new createPlanet('Mars', 3.4, 115, 25, marsTexture, marsBump);
 scene.add(mars.planet3d);
+scene.add(mars.planetOrbit3d);
 // Load Mars moons
 marsMoons.forEach(moon => {
   loadObject(moon.modelPath, moon.position, moon.scale, function (loadedModel) {
@@ -371,22 +375,27 @@ marsMoons.forEach(moon => {
 
 const jupiter = new createPlanet('Jupiter', 69 / 4, 200, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
 scene.add(jupiter.planet3d);
+scene.add(jupiter.planetOrbit3d);
 const saturn = new createPlanet('Saturn', 58 / 4, 270, 26, saturnTexture, null, {
   innerRadius: 18,
   outerRadius: 29,
   texture: satRingTexture
 });
 scene.add(saturn.planet3d);
+scene.add(saturn.planetOrbit3d);
 const uranus = new createPlanet('Uranus', 25 / 4, 320, 82, uranusTexture, null, {
   innerRadius: 6,
   outerRadius: 8,
   texture: uraRingTexture
 });
 scene.add(uranus.planet3d);
+scene.add(uranus.planetOrbit3d);
 const neptune = new createPlanet('Neptune', 24 / 4, 340, 28, neptuneTexture);
 scene.add(neptune.planet3d);
+scene.add(neptune.planetOrbit3d);
 const pluto = new createPlanet('Pluto', 1, 350, 57, plutoTexture);
 scene.add(pluto.planet3d);
+scene.add(pluto.planetOrbit3d);
 
 // Array of planets and atmospheres for raycasting
 const raycastTargets = [
@@ -445,9 +454,13 @@ function animate() {
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
+  
   earth.planet.rotateY(0.005 * settings.acceleration);
   earth.Atmosphere.rotateY(0.001 * settings.acceleration);
   earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
+
+  earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
+  
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);
   jupiter.planet.rotateY(0.005 * settings.acceleration);
