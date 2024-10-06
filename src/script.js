@@ -35,15 +35,16 @@ import uranusTexture from '/images/uranus.jpg';
 import uraRingTexture from '/images/uranus_ring.png';
 import neptuneTexture from '/images/neptune.jpg';
 import plutoTexture from '/images/plutomap.jpg';
-import { createPlanet, showPlanetInfo } from './funcions/planets';
+import { createPlanet, showPlanetInfo, fetchPlanets } from './funcions/planets';
 import { loadAsteroids } from './funcions/asteroids';
+let theta = 0;
 
 // ******  SETUP  ******
 console.log("Create the scene");
 const scene = new THREE.Scene();
 
 console.log("Create a perspective projection camera");
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
 camera.position.set(-175, 115, 5);
 
 console.log("Create the renderer");
@@ -82,7 +83,7 @@ composer.addPass(bloomPass);
 
 // ****** AMBIENT LIGHT ******
 console.log("Add the ambient light");
-var lightAmbient = new THREE.AmbientLight(0x222222, 6);
+var lightAmbient = new THREE.AmbientLight(0x222222, 40);
 
 
 function createHabitableZone(innerRadius,outerRadius, scene, color) {
@@ -109,7 +110,6 @@ scene.add(lightAmbient);
 
 // ******  Star background  ******
 scene.background = cubeTextureLoader.load([
-
   bgTexture3,
   bgTexture1,
   bgTexture2,
@@ -217,7 +217,6 @@ function identifyPlanet(clickedObject) {
   return null;
 }
 
-
 let isZoomingOut = false;
 let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 // close 'x' button function
@@ -246,12 +245,21 @@ sunMat = new THREE.MeshStandardMaterial({
   emissiveIntensity: settings.sunIntensity
 });
 const sun = new THREE.Mesh(sunGeom, sunMat);
+let foco = 1 * (0.0167 + Math.cos(0));
+//sun.position.x = foco*90;
 scene.add(sun);
 
 //point light in the sun
-const pointLight = new THREE.PointLight(0xFDFFD3, 1200, 400, 1.4);
+const pointLight = new THREE.PointLight(0xFDFFD3, 1200, 4000, 1.4);
+/* pointLight.position.x = foco*90;
+pointLight.position.y = 150; */
 scene.add(pointLight);
 
+const size = 3000;
+const divisions = 50;
+
+/* const gridHelper = new THREE.GridHelper(size, divisions);
+scene.add(gridHelper); */
 
 // ******  LOADING OBJECTS METHOD  ******
 function loadObject(path, position, scale, callback) {
@@ -308,7 +316,6 @@ const earthMaterial = new THREE.ShaderMaterial({
     }
   `
 });
-
 
 // ******  MOONS  ******
 // Earth
@@ -464,10 +471,13 @@ uranus.planet.receiveShadow = true;
 neptune.planet.receiveShadow = true;
 pluto.planet.receiveShadow = true;
 
+// Variables para la animación
+let time = 0; // El tiempo, para avanzar sobre la órbita
+let angle = 0;
 
+let data = false;
 
-
-function animate() {
+async function animate() {
 
   //rotating planets around the sun and itself
   sun.rotateY(0.001 * settings.acceleration);
@@ -476,13 +486,31 @@ function animate() {
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
-  
+
   earth.planet.rotateY(0.005 * settings.acceleration);
   earth.Atmosphere.rotateY(0.001 * settings.acceleration);
   earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
 
-  earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
-  
+  // Incrementamos el tiempo para avanzar en la órbita
+  time += 0.001 * settings.accelerationOrbit;
+
+  // Obtener la posición en la órbita usando el tiempo
+  const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
+
+
+  // Aplicar las coordenadas de la elipse a la posición del planeta
+  //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
+  //earth.planet3d.rotation.z = Math.PI / 2;
+
+  if (!data) {
+    data = await fetchPlanets(1, 10);
+  }
+
+  /* for (let i in data) {
+    let planet = data[i];
+    setcoordinatesOrbit(planet.a, planet.e, planet.om, planet.w, planet.full_name)
+  } */
+  //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);
   jupiter.planet.rotateY(0.005 * settings.acceleration);
@@ -580,14 +608,70 @@ function animate() {
     }
   }
 
+  // Update the controls
+  angle += 0.01;
+  if (angle > 2 * Math.PI) angle = 0;
+
   controls.update();
   requestAnimationFrame(animate);
   composer.render();
 }
 
-loadAsteroids('./asteroids/asteroidPack.glb', 1000, 130, 160, scene);
+loadAsteroids('./asteroids/asteroidPack.glb', 1000, 210, 250, scene);
 loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
 animate();
+
+/* function setcoordinatesOrbit(a,e, planet){
+  let scale = a >= 8 ? 40 : 200; 
+  let x = a*(Math.cos(angle) - e);
+  let y = a*Math.sin(angle)*Math.sqrt(a-(e**2));
+  planet.planet3d.position.set(x*scale, 0, y*scale);
+  return {x, y};
+} */
+
+function degreesToRadians(degrees) {
+  return degrees * (Math.PI / 180);
+}
+
+async function setcoordinatesOrbit(a, e, W, w, planetKey) {
+  const planetsMap = {
+    'Earth': earth,
+    'Mars': mars,
+    'Mercury': mercury,
+    'Neptune': neptune,
+    'Venus': venus
+  };
+  let planet = planetsMap[planetKey];
+  if (!planet) return;
+
+  let i = degreesToRadians(7); // Inclinación en radianes (puedes modificarla para cada planeta si es necesario)
+  let omega = degreesToRadians(w); // Argumento del periapsis
+  let Omega = degreesToRadians(W); // Longitud del nodo ascendente
+
+  // Calcular la posición del planeta en la órbita
+  theta += degreesToRadians(0.01); // Incrementar el ángulo para el movimiento orbital
+  const r = a * (1 - e * e) / (1 + e * Math.cos(theta)); // Radio en función del ángulo y la excentricidad
+  let x_prime = r * Math.cos(theta);
+  let y_prime = r * Math.sin(theta);
+  let z_prime = 0;
+
+  // Rotar según la inclinación orbital, el argumento del periapsis y el nodo ascendente
+  let x = x_prime * (Math.cos(Omega) * Math.cos(omega) - Math.sin(Omega) * Math.sin(omega) * Math.cos(i)) -
+    y_prime * (Math.sin(Omega) * Math.cos(omega) + Math.cos(Omega) * Math.sin(omega) * Math.cos(i));
+  let y = x_prime * (Math.cos(Omega) * Math.sin(omega) + Math.sin(Omega) * Math.cos(omega) * Math.cos(i)) -
+    y_prime * (Math.sin(Omega) * Math.sin(omega) - Math.cos(Omega) * Math.cos(omega) * Math.cos(i));
+  let z = x_prime * Math.sin(omega) * Math.sin(i) + y_prime * Math.cos(omega) * Math.sin(i);
+
+  // Multiplicar las coordenadas por 50 para escalar en tu sistema de simulación (puedes ajustar este factor)
+  console.log(x * 100, 0, y * 100); 
+
+  // Actualizar la posición del planeta en la simulación 3D
+  try {
+    planet.planet3d.position.set(x* 250, 0, y * 250);
+  } catch (e) {
+    console.log(e, planetKey); // Manejo de errores
+  }
+}
 
 window.addEventListener('mousemove', onMouseMove, false);
 window.addEventListener('mousedown', onDocumentMouseDown, false);
@@ -597,3 +681,67 @@ window.addEventListener('resize', function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
 });
+/* 
+import * as math  from 'mathjs'
+
+// Parámetros orbitales para los cuerpos del Sistema Solar
+const orbitalData = {
+  'Mercurio': { a: 0.387, e: 0.205 },
+  'Venus': { a: 0.723, e: 0.007 },
+  'Tierra': { a: 1.000, e: 0.017 },
+  'Marte': { a: 1.524, e: 0.093 },
+  'Ceres': { a: 2.767, e: 0.079 },
+  'Júpiter': { a: 5.204, e: 0.049 },
+  'Saturno': { a: 9.582, e: 0.056 },
+  'Urano': { a: 19.201, e: 0.046 },
+  'Neptuno': { a: 30.047, e: 0.010 },
+  'Plutón': { a: 39.482, e: 0.249 },
+  'Eris': { a: 67.781, e: 0.441 },
+};
+
+// Función para resolver la ecuación de Kepler
+function solveKepler(M, e, tol = 1e-6) {
+  let E = M; // Estimación inicial
+  while (true) {
+      let E_new = E + (M - E + e * math.sin(E)) / (1 - e * math.cos(E));
+      if (math.abs(E_new - E) < tol) {
+          break;
+      }
+      E = E_new;
+  }
+  return E;
+}
+
+// Implementación de linspace
+function linspace(start, end, num) {
+  const step = (end - start) / (num - 1);
+  return Array.from({ length: num }, (_, i) => start + (i * step));
+}
+
+// Calcular las coordenadas x e y para cada planeta
+let planetPositions = {};
+
+Object.keys(orbitalData).forEach(planet => {
+  const { a, e } = orbitalData[planet];
+  const nPoints = 500; // Número de puntos para representar la órbita
+  
+  let thetaValues = linspace(0, 2 * Math.PI, nPoints);
+  let rValues = new Array(nPoints);
+
+  for (let i = 0; i < thetaValues.length; i++) {
+      let M = thetaValues[i];
+      let E = solveKepler(M, e);
+      let r = a * (1 - e * math.cos(E));
+      rValues[i] = r;
+  }
+
+  // Convertir a coordenadas cartesianas
+  let xValues = rValues.map((r, i) => r * math.cos(thetaValues[i]));
+  let yValues = rValues.map((r, i) => r * math.sin(thetaValues[i]));
+
+  planetPositions[planet] = { x: xValues, y: yValues };
+});
+
+// Mostrar los valores de x e y
+console.log(planetPositions);
+ */
