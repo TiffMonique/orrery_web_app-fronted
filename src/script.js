@@ -457,6 +457,10 @@ pluto.planet.receiveShadow = true;
 let time = 0; // El tiempo, para avanzar sobre la órbita
 let angle = 0;
 
+
+let data = false;
+
+
 async function animate() {
 
   //rotating planets around the sun and itself
@@ -477,7 +481,7 @@ async function animate() {
 
   // Obtener la posición en la órbita usando el tiempo
   const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
-  
+
 
   // Aplicar las coordenadas de la elipse a la posición del planeta
   //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
@@ -504,9 +508,11 @@ async function animate() {
    setcoordinatesOrbit(19.191, 0.0463, uranus);
    setcoordinatesOrbit(30.069, 0.01, neptune);
    setcoordinatesOrbit(39.482, 0.2488, pluto); */
+  if (!data) {
+    data = await fetchPlanets(1, 10);
+  }
 
-  let data = await fetchPlanets(1, 10, '');
-  for(let i in data){
+  for (let i in data) {
     let planet = data[i];
     setcoordinatesOrbit(planet.a, planet.e, planet.om, planet.w, planet.full_name)
   }
@@ -648,11 +654,11 @@ async function setcoordinatesOrbit(a, e, W, w, planetKey) {
     'Venus': venus
   }
   let planet = planetsMap[planetKey];
+  if (!planet) return;
 
   let i = degreesToRadians(7); // Inclination in radians
   let omega = degreesToRadians(w); // Argument of periapsis
   let Omega = degreesToRadians(W); // Longitude of ascending node
-  let data = await fetchPlanets(1, 10,);
 
   // Calculate planet position in the orbit
   theta += 0.01; // Increase the angle for orbital motion
@@ -670,9 +676,9 @@ async function setcoordinatesOrbit(a, e, W, w, planetKey) {
   console.log(x * 100, 0, y * 100)
 
   // Update planet position
-  try{
+  try {
     planet.planet3d.position.set(x * 100, 0, y * 100);
-  }catch(e){
+  } catch (e) {
     console.log(e, planetKey);
   }
 }
