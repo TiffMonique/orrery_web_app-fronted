@@ -2,15 +2,12 @@ import * as THREE from 'three';
 import planetData from '../data/planetData.json';
 import axios from 'axios';
 
-const apiUrl = 'http://localhost:3031/planets';  // Endpoint de tu servidor
+const apiUrl = 'http://localhost:3001/planets';  // Endpoint de tu servidor
 
 // Función para consumir el endpoint planets
 export async function fetchPlanets(page = 1, limit = 10, full_name = '') {
   try {
     const response = await axios.get(apiUrl, {
-      params: {  // Límite de resultados por página
-        full_name: full_name  // Filtro opcional por full_name
-      }
     });
 
     // Procesar los datos recibidos

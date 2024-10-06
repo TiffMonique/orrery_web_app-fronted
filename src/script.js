@@ -477,14 +477,7 @@ async function animate() {
 
   // Obtener la posición en la órbita usando el tiempo
   const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
-  const planetsMap = {
-    'earth': earth,
-    'mars': mars,
-    'mercury': mercury,
-    'neptune': neptune,
-    'pluto': pluto,
-    'venus': venus
-  }
+  
 
   // Aplicar las coordenadas de la elipse a la posición del planeta
   //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
@@ -513,7 +506,10 @@ async function animate() {
    setcoordinatesOrbit(39.482, 0.2488, pluto); */
 
   let data = await fetchPlanets(1, 10, '');
-  console.log(data)
+  for(let i in data){
+    let planet = data[i];
+    setcoordinatesOrbit(planet.a, planet.e, planet.om, planet.w, planet.full_name)
+  }
 
 
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
@@ -644,6 +640,13 @@ async function setcoordinatesOrbit(a, e, W, w, planetKey) {
   // Orbital parameters for a planet
   //let a = 5; // Semimajor axis
   //let e = 0.1; // Eccentricity
+  const planetsMap = {
+    'Earth': earth,
+    'Mars': mars,
+    'Mercury': mercury,
+    'Neptune': neptune,
+    'Venus': venus
+  }
   let planet = planetsMap[planetKey];
 
   let i = degreesToRadians(7); // Inclination in radians
@@ -664,9 +667,14 @@ async function setcoordinatesOrbit(a, e, W, w, planetKey) {
   let y = x_prime * (Math.cos(Omega) * Math.sin(omega) + Math.sin(Omega) * Math.cos(omega) * Math.cos(i)) -
     y_prime * (Math.sin(Omega) * Math.sin(omega) - Math.cos(Omega) * Math.cos(omega) * Math.cos(i));
   let z = x_prime * Math.sin(omega) * Math.sin(i) + y_prime * Math.cos(omega) * Math.sin(i);
+  console.log(x * 100, 0, y * 100)
 
   // Update planet position
-  planet.planet3d.position.set(x * 100, 0, y * 100);
+  try{
+    planet.planet3d.position.set(x * 100, 0, y * 100);
+  }catch(e){
+    console.log(e, planetKey);
+  }
 }
 
 window.addEventListener('mousemove', onMouseMove, false);
