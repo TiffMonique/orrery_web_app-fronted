@@ -35,7 +35,7 @@ import uranusTexture from '/images/uranus.jpg';
 import uraRingTexture from '/images/uranus_ring.png';
 import neptuneTexture from '/images/neptune.jpg';
 import plutoTexture from '/images/plutomap.jpg';
-import { createPlanet, showPlanetInfo } from './funcions/planets';
+import { createPlanet, showPlanetInfo, fetchPlanets } from './funcions/planets';
 import { loadAsteroids } from './funcions/asteroids';
 let theta = 0;
 
@@ -224,7 +224,7 @@ sunMat = new THREE.MeshStandardMaterial({
   emissiveIntensity: settings.sunIntensity
 });
 const sun = new THREE.Mesh(sunGeom, sunMat);
-let foco = 1*(0.0167 + Math.cos(0));
+let foco = 1 * (0.0167 + Math.cos(0));
 //sun.position.x = foco*90;
 scene.add(sun);
 
@@ -237,8 +237,8 @@ scene.add(pointLight);
 const size = 3000;
 const divisions = 50;
 
-const gridHelper = new THREE.GridHelper( size, divisions );
-scene.add( gridHelper );
+const gridHelper = new THREE.GridHelper(size, divisions);
+scene.add(gridHelper);
 
 // ******  LOADING OBJECTS METHOD  ******
 function loadObject(path, position, scale, callback) {
@@ -457,7 +457,7 @@ pluto.planet.receiveShadow = true;
 let time = 0; // El tiempo, para avanzar sobre la órbita
 let angle = 0;
 
-function animate() {
+async function animate() {
 
   //rotating planets around the sun and itself
   sun.rotateY(0.001 * settings.acceleration);
@@ -466,10 +466,10 @@ function animate() {
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
-  
+
   earth.planet.rotateY(0.005 * settings.acceleration);
   earth.Atmosphere.rotateY(0.001 * settings.acceleration);
-  
+
   //earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
 
   // Incrementamos el tiempo para avanzar en la órbita
@@ -477,6 +477,14 @@ function animate() {
 
   // Obtener la posición en la órbita usando el tiempo
   const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
+  const planetsMap = {
+    'earth': earth,
+    'mars': mars,
+    'mercury': mercury,
+    'neptune': neptune,
+    'pluto': pluto,
+    'venus': venus
+  }
 
   // Aplicar las coordenadas de la elipse a la posición del planeta
   //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
@@ -492,21 +500,24 @@ function animate() {
   setcoordinatesOrbit(19.191, 0.0463, uranus);
   setcoordinatesOrbit(30.069, 0.01, neptune);
   setcoordinatesOrbit(39.482, 0.2488, pluto); */
-  
-  setcoordinatesOrbit(1, 0.0167, 0, 114.21*100, earth);
- /*  setcoordinatesOrbit(0.387, 0.2056, mercury);
-  setcoordinatesOrbit(0.723, 0.0067, venus);
 
-  setcoordinatesOrbit(1.524, 0.0934, mars);
-  setcoordinatesOrbit(5.203, 0.0489, jupiter);
-  setcoordinatesOrbit(9.537, 0.0565, saturn);
-  setcoordinatesOrbit(19.191, 0.0463, uranus);
-  setcoordinatesOrbit(30.069, 0.01, neptune);
-  setcoordinatesOrbit(39.482, 0.2488, pluto); */
+  //setcoordinatesOrbit(1, 0.0167, 0, 114.21 * 100, 'earth');
+  /*  setcoordinatesOrbit(0.387, 0.2056, mercury);
+   setcoordinatesOrbit(0.723, 0.0067, venus);
+ 
+   setcoordinatesOrbit(1.524, 0.0934, mars);
+   setcoordinatesOrbit(5.203, 0.0489, jupiter);
+   setcoordinatesOrbit(9.537, 0.0565, saturn);
+   setcoordinatesOrbit(19.191, 0.0463, uranus);
+   setcoordinatesOrbit(30.069, 0.01, neptune);
+   setcoordinatesOrbit(39.482, 0.2488, pluto); */
+
+  let data = await fetchPlanets(1, 10, '');
+  console.log(data)
 
 
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
-  
+
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);
   jupiter.planet.rotateY(0.005 * settings.acceleration);
@@ -606,7 +617,7 @@ function animate() {
 
   // Update the controls
   angle += 0.01;
-  if(angle > 2 * Math.PI) angle = 0;
+  if (angle > 2 * Math.PI) angle = 0;
 
   controls.update();
   requestAnimationFrame(animate);
@@ -626,33 +637,36 @@ animate();
 } */
 
 function degreesToRadians(degrees) {
-    return degrees * (Math.PI / 180);
+  return degrees * (Math.PI / 180);
 }
 
-function setcoordinatesOrbit(a, e, W, w, planet){
+async function setcoordinatesOrbit(a, e, W, w, planetKey) {
   // Orbital parameters for a planet
   //let a = 5; // Semimajor axis
   //let e = 0.1; // Eccentricity
+  let planet = planetsMap[planetKey];
+
   let i = degreesToRadians(7); // Inclination in radians
   let omega = degreesToRadians(w); // Argument of periapsis
   let Omega = degreesToRadians(W); // Longitude of ascending node
+  let data = await fetchPlanets(1, 10,);
 
-   // Calculate planet position in the orbit
-   theta += 0.01; // Increase the angle for orbital motion
-   const r = a * (1 - e * e) / (1 + e * Math.cos(theta)); // Radius
-   let x_prime = r * Math.cos(theta);
-   let y_prime = r * Math.sin(theta);
-   let z_prime = 0;
- 
-   // Rotate according to orbital inclination, argument of periapsis, and node
-   let x = x_prime * (Math.cos(Omega) * Math.cos(omega) - Math.sin(Omega) * Math.sin(omega) * Math.cos(i)) - 
-           y_prime * (Math.sin(Omega) * Math.cos(omega) + Math.cos(Omega) * Math.sin(omega) * Math.cos(i));
-   let y = x_prime * (Math.cos(Omega) * Math.sin(omega) + Math.sin(Omega) * Math.cos(omega) * Math.cos(i)) - 
-           y_prime * (Math.sin(Omega) * Math.sin(omega) - Math.cos(Omega) * Math.cos(omega) * Math.cos(i));
-   let z = x_prime * Math.sin(omega) * Math.sin(i) + y_prime * Math.cos(omega) * Math.sin(i);
- 
-   // Update planet position
-   planet.planet3d.position.set(x*100, 0, y*100);
+  // Calculate planet position in the orbit
+  theta += 0.01; // Increase the angle for orbital motion
+  const r = a * (1 - e * e) / (1 + e * Math.cos(theta)); // Radius
+  let x_prime = r * Math.cos(theta);
+  let y_prime = r * Math.sin(theta);
+  let z_prime = 0;
+
+  // Rotate according to orbital inclination, argument of periapsis, and node
+  let x = x_prime * (Math.cos(Omega) * Math.cos(omega) - Math.sin(Omega) * Math.sin(omega) * Math.cos(i)) -
+    y_prime * (Math.sin(Omega) * Math.cos(omega) + Math.cos(Omega) * Math.sin(omega) * Math.cos(i));
+  let y = x_prime * (Math.cos(Omega) * Math.sin(omega) + Math.sin(Omega) * Math.cos(omega) * Math.cos(i)) -
+    y_prime * (Math.sin(Omega) * Math.sin(omega) - Math.cos(Omega) * Math.cos(omega) * Math.cos(i));
+  let z = x_prime * Math.sin(omega) * Math.sin(i) + y_prime * Math.cos(omega) * Math.sin(i);
+
+  // Update planet position
+  planet.planet3d.position.set(x * 100, 0, y * 100);
 }
 
 window.addEventListener('mousemove', onMouseMove, false);
