@@ -37,13 +37,14 @@ import neptuneTexture from '/images/neptune.jpg';
 import plutoTexture from '/images/plutomap.jpg';
 import { createPlanet, showPlanetInfo } from './funcions/planets';
 import { loadAsteroids } from './funcions/asteroids';
+let theta = 0;
 
 // ******  SETUP  ******
 console.log("Create the scene");
 const scene = new THREE.Scene();
 
 console.log("Create a perspective projection camera");
-var camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
+var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
 camera.position.set(-175, 115, 5);
 
 console.log("Create the renderer");
@@ -87,7 +88,6 @@ scene.add(lightAmbient);
 
 // ******  Star background  ******
 scene.background = cubeTextureLoader.load([
-
   bgTexture3,
   bgTexture1,
   bgTexture2,
@@ -225,16 +225,20 @@ sunMat = new THREE.MeshStandardMaterial({
 });
 const sun = new THREE.Mesh(sunGeom, sunMat);
 let foco = 1*(0.0167 + Math.cos(0));
-sun.position.x = foco*90;
-//sun.position.x = 40;
-//scene.add(sun);
+//sun.position.x = foco*90;
+scene.add(sun);
 
 //point light in the sun
-const pointLight = new THREE.PointLight(0xFDFFD3, 12000, 4000, 1.4);
-pointLight.position.x = foco*90;
-pointLight.position.y = 150;
+const pointLight = new THREE.PointLight(0xFDFFD3, 1200, 4000, 1.4);
+/* pointLight.position.x = foco*90;
+pointLight.position.y = 150; */
 scene.add(pointLight);
 
+const size = 3000;
+const divisions = 50;
+
+const gridHelper = new THREE.GridHelper( size, divisions );
+scene.add( gridHelper );
 
 // ******  LOADING OBJECTS METHOD  ******
 function loadObject(path, position, scale, callback) {
@@ -378,24 +382,24 @@ marsMoons.forEach(moon => {
   });
 });
 
-const jupiter = new createPlanet('Jupiter', 69 / 4, 200, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
+const jupiter = new createPlanet('Jupiter', 17.5, 200, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
 scene.add(jupiter.planet3d);
 scene.add(jupiter.planetOrbit3d);
-const saturn = new createPlanet('Saturn', 58 / 4, 270, 26, saturnTexture, null, {
+const saturn = new createPlanet('Saturn', 14.5, 270, 26, saturnTexture, null, {
   innerRadius: 18,
   outerRadius: 29,
   texture: satRingTexture
 });
 scene.add(saturn.planet3d);
 scene.add(saturn.planetOrbit3d);
-const uranus = new createPlanet('Uranus', 25 / 4, 320, 82, uranusTexture, null, {
+const uranus = new createPlanet('Uranus', 6.25, 320, 82, uranusTexture, null, {
   innerRadius: 6,
   outerRadius: 8,
   texture: uraRingTexture
 });
 scene.add(uranus.planet3d);
 scene.add(uranus.planetOrbit3d);
-const neptune = new createPlanet('Neptune', 24 / 4, 340, 28, neptuneTexture);
+const neptune = new createPlanet('Neptune', 6, 340, 28, neptuneTexture);
 scene.add(neptune.planet3d);
 scene.add(neptune.planetOrbit3d);
 const pluto = new createPlanet('Pluto', 1, 350, 57, plutoTexture);
@@ -478,9 +482,7 @@ function animate() {
   //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
   //earth.planet3d.rotation.z = Math.PI / 2;
 
-  // Renieri
-  //let x = (1*(1-(0.0167**2)))/(1+(0.0167*Math.cos(angle)));
-  setcoordinatesOrbit(1, 0.0167, earth);
+  /* setcoordinatesOrbit(1, 0.0167, earth);
   setcoordinatesOrbit(0.387, 0.2056, mercury);
   setcoordinatesOrbit(0.723, 0.0067, venus);
 
@@ -489,7 +491,18 @@ function animate() {
   setcoordinatesOrbit(9.537, 0.0565, saturn);
   setcoordinatesOrbit(19.191, 0.0463, uranus);
   setcoordinatesOrbit(30.069, 0.01, neptune);
-  setcoordinatesOrbit(39.482, 0.2488, pluto);
+  setcoordinatesOrbit(39.482, 0.2488, pluto); */
+  
+  setcoordinatesOrbit(1, 0.0167, 0, 114.21*100, earth);
+ /*  setcoordinatesOrbit(0.387, 0.2056, mercury);
+  setcoordinatesOrbit(0.723, 0.0067, venus);
+
+  setcoordinatesOrbit(1.524, 0.0934, mars);
+  setcoordinatesOrbit(5.203, 0.0489, jupiter);
+  setcoordinatesOrbit(9.537, 0.0565, saturn);
+  setcoordinatesOrbit(19.191, 0.0463, uranus);
+  setcoordinatesOrbit(30.069, 0.01, neptune);
+  setcoordinatesOrbit(39.482, 0.2488, pluto); */
 
 
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
@@ -604,11 +617,42 @@ function animate() {
 //loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
 animate();
 
-function setcoordinatesOrbit(a,e, planet){
+/* function setcoordinatesOrbit(a,e, planet){
+  let scale = a >= 8 ? 40 : 200; 
   let x = a*(Math.cos(angle) - e);
   let y = a*Math.sin(angle)*Math.sqrt(a-(e**2));
-  planet.planet3d.position.set(x*30, 0, y*30);
+  planet.planet3d.position.set(x*scale, 0, y*scale);
   return {x, y};
+} */
+
+function degreesToRadians(degrees) {
+    return degrees * (Math.PI / 180);
+}
+
+function setcoordinatesOrbit(a, e, W, w, planet){
+  // Orbital parameters for a planet
+  //let a = 5; // Semimajor axis
+  //let e = 0.1; // Eccentricity
+  let i = degreesToRadians(7); // Inclination in radians
+  let omega = degreesToRadians(w); // Argument of periapsis
+  let Omega = degreesToRadians(W); // Longitude of ascending node
+
+   // Calculate planet position in the orbit
+   theta += 0.01; // Increase the angle for orbital motion
+   const r = a * (1 - e * e) / (1 + e * Math.cos(theta)); // Radius
+   let x_prime = r * Math.cos(theta);
+   let y_prime = r * Math.sin(theta);
+   let z_prime = 0;
+ 
+   // Rotate according to orbital inclination, argument of periapsis, and node
+   let x = x_prime * (Math.cos(Omega) * Math.cos(omega) - Math.sin(Omega) * Math.sin(omega) * Math.cos(i)) - 
+           y_prime * (Math.sin(Omega) * Math.cos(omega) + Math.cos(Omega) * Math.sin(omega) * Math.cos(i));
+   let y = x_prime * (Math.cos(Omega) * Math.sin(omega) + Math.sin(Omega) * Math.cos(omega) * Math.cos(i)) - 
+           y_prime * (Math.sin(Omega) * Math.sin(omega) - Math.cos(Omega) * Math.cos(omega) * Math.cos(i));
+   let z = x_prime * Math.sin(omega) * Math.sin(i) + y_prime * Math.cos(omega) * Math.sin(i);
+ 
+   // Update planet position
+   planet.planet3d.position.set(x*100, 0, y*100);
 }
 
 window.addEventListener('mousemove', onMouseMove, false);
@@ -619,3 +663,67 @@ window.addEventListener('resize', function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
 });
+/* 
+import * as math  from 'mathjs'
+
+// Parámetros orbitales para los cuerpos del Sistema Solar
+const orbitalData = {
+  'Mercurio': { a: 0.387, e: 0.205 },
+  'Venus': { a: 0.723, e: 0.007 },
+  'Tierra': { a: 1.000, e: 0.017 },
+  'Marte': { a: 1.524, e: 0.093 },
+  'Ceres': { a: 2.767, e: 0.079 },
+  'Júpiter': { a: 5.204, e: 0.049 },
+  'Saturno': { a: 9.582, e: 0.056 },
+  'Urano': { a: 19.201, e: 0.046 },
+  'Neptuno': { a: 30.047, e: 0.010 },
+  'Plutón': { a: 39.482, e: 0.249 },
+  'Eris': { a: 67.781, e: 0.441 },
+};
+
+// Función para resolver la ecuación de Kepler
+function solveKepler(M, e, tol = 1e-6) {
+  let E = M; // Estimación inicial
+  while (true) {
+      let E_new = E + (M - E + e * math.sin(E)) / (1 - e * math.cos(E));
+      if (math.abs(E_new - E) < tol) {
+          break;
+      }
+      E = E_new;
+  }
+  return E;
+}
+
+// Implementación de linspace
+function linspace(start, end, num) {
+  const step = (end - start) / (num - 1);
+  return Array.from({ length: num }, (_, i) => start + (i * step));
+}
+
+// Calcular las coordenadas x e y para cada planeta
+let planetPositions = {};
+
+Object.keys(orbitalData).forEach(planet => {
+  const { a, e } = orbitalData[planet];
+  const nPoints = 500; // Número de puntos para representar la órbita
+  
+  let thetaValues = linspace(0, 2 * Math.PI, nPoints);
+  let rValues = new Array(nPoints);
+
+  for (let i = 0; i < thetaValues.length; i++) {
+      let M = thetaValues[i];
+      let E = solveKepler(M, e);
+      let r = a * (1 - e * math.cos(E));
+      rValues[i] = r;
+  }
+
+  // Convertir a coordenadas cartesianas
+  let xValues = rValues.map((r, i) => r * math.cos(thetaValues[i]));
+  let yValues = rValues.map((r, i) => r * math.sin(thetaValues[i]));
+
+  planetPositions[planet] = { x: xValues, y: yValues };
+});
+
+// Mostrar los valores de x e y
+console.log(planetPositions);
+ */

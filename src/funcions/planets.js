@@ -118,6 +118,12 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
       moon.mesh = moonMesh;
     });
   }
+
+  // Labels
+
+  
+
+
   //add planet system to planet3d object and to the scene
   planet3d.add(planetSystem);
   return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, planetOrbit3d, orbitPath };

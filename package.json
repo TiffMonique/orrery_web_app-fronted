@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "dat.gui": "^0.7.9",
+    "mathjs": "^13.2.0",
     "postprocessing": "^7.0.0-alpha-1",
     "three": "^0.160.0"
   },
