@@ -1,5 +1,23 @@
 import * as THREE from 'three';
 import planetData from '../data/planetData.json';
+import axios from 'axios';
+
+const apiUrl = 'http://localhost:3001/planets';  // Endpoint de tu servidor
+
+// Función para consumir el endpoint planets
+export async function fetchPlanets(page = 1, limit = 10, full_name = '') {
+  try {
+    const response = await axios.get(apiUrl, {
+    });
+
+    // Procesar los datos recibidos
+    console.log('Planets data:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching planets:', error);
+  }
+}
+
 
 // ******  SHOW PLANET INFO AFTER SELECTION  ******
 export function showPlanetInfo(planet) {
@@ -50,7 +68,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   // add orbit path
   const orbitPath = new THREE.EllipseCurve(
     0, 0,            // ax, aY
-    position, position+50, // xRadius, yRadius
+    position, position + 50, // xRadius, yRadius
     0, 2 * Math.PI,   // aStartAngle, aEndAngle
     false,            // aClockwise
     0                 // aRotation
@@ -62,7 +80,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
   orbit.rotation.x = Math.PI / 2;
   //planetSystem.add(orbit);
-  planetOrbit3d.add(orbit);
+  //planetOrbit3d.add(orbit);
 
   //add ring
   if (ring) {
@@ -118,7 +136,13 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
       moon.mesh = moonMesh;
     });
   }
+
+  // Labels
+
+
+
+
   //add planet system to planet3d object and to the scene
   planet3d.add(planetSystem);
-  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, planetOrbit3d };
+  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, planetOrbit3d, orbitPath };
 }
