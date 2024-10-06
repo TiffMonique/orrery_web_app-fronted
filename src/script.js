@@ -677,7 +677,7 @@ async function setcoordinatesOrbit(a, e, W, w, planetKey) {
 
   // Update planet position
   try {
-    planet.planet3d.position.set(x * 100, 0, y * 100);
+    planet.planet3d.position.set(x* 50, 0, y * 50);
   } catch (e) {
     console.log(e, planetKey);
   }
