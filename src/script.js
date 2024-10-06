@@ -83,7 +83,7 @@ composer.addPass(bloomPass);
 
 // ****** AMBIENT LIGHT ******
 console.log("Add the ambient light");
-var lightAmbient = new THREE.AmbientLight(0x222222, 6);
+var lightAmbient = new THREE.AmbientLight(0x222222, 40);
 scene.add(lightAmbient);
 
 // ******  Star background  ******
@@ -195,7 +195,6 @@ function identifyPlanet(clickedObject) {
   return null;
 }
 
-
 let isZoomingOut = false;
 let zoomOutTargetPosition = new THREE.Vector3(-175, 115, 5);
 // close 'x' button function
@@ -237,8 +236,8 @@ scene.add(pointLight);
 const size = 3000;
 const divisions = 50;
 
-const gridHelper = new THREE.GridHelper(size, divisions);
-scene.add(gridHelper);
+/* const gridHelper = new THREE.GridHelper(size, divisions);
+scene.add(gridHelper); */
 
 // ******  LOADING OBJECTS METHOD  ******
 function loadObject(path, position, scale, callback) {
@@ -295,7 +294,6 @@ const earthMaterial = new THREE.ShaderMaterial({
     }
   `
 });
-
 
 // ******  MOONS  ******
 // Earth
@@ -451,30 +449,25 @@ uranus.planet.receiveShadow = true;
 neptune.planet.receiveShadow = true;
 pluto.planet.receiveShadow = true;
 
-
-
 // Variables para la animación
 let time = 0; // El tiempo, para avanzar sobre la órbita
 let angle = 0;
 
-
 let data = false;
-
 
 async function animate() {
 
   //rotating planets around the sun and itself
   sun.rotateY(0.001 * settings.acceleration);
   mercury.planet.rotateY(0.001 * settings.acceleration);
-  //mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
+  mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
 
   earth.planet.rotateY(0.005 * settings.acceleration);
   earth.Atmosphere.rotateY(0.001 * settings.acceleration);
-
-  //earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
+  earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
 
   // Incrementamos el tiempo para avanzar en la órbita
   time += 0.001 * settings.accelerationOrbit;
@@ -487,39 +480,15 @@ async function animate() {
   //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
   //earth.planet3d.rotation.z = Math.PI / 2;
 
-  /* setcoordinatesOrbit(1, 0.0167, earth);
-  setcoordinatesOrbit(0.387, 0.2056, mercury);
-  setcoordinatesOrbit(0.723, 0.0067, venus);
-
-  setcoordinatesOrbit(1.524, 0.0934, mars);
-  setcoordinatesOrbit(5.203, 0.0489, jupiter);
-  setcoordinatesOrbit(9.537, 0.0565, saturn);
-  setcoordinatesOrbit(19.191, 0.0463, uranus);
-  setcoordinatesOrbit(30.069, 0.01, neptune);
-  setcoordinatesOrbit(39.482, 0.2488, pluto); */
-
-  //setcoordinatesOrbit(1, 0.0167, 0, 114.21 * 100, 'earth');
-  /*  setcoordinatesOrbit(0.387, 0.2056, mercury);
-   setcoordinatesOrbit(0.723, 0.0067, venus);
- 
-   setcoordinatesOrbit(1.524, 0.0934, mars);
-   setcoordinatesOrbit(5.203, 0.0489, jupiter);
-   setcoordinatesOrbit(9.537, 0.0565, saturn);
-   setcoordinatesOrbit(19.191, 0.0463, uranus);
-   setcoordinatesOrbit(30.069, 0.01, neptune);
-   setcoordinatesOrbit(39.482, 0.2488, pluto); */
   if (!data) {
     data = await fetchPlanets(1, 10);
   }
 
-  for (let i in data) {
+  /* for (let i in data) {
     let planet = data[i];
     setcoordinatesOrbit(planet.a, planet.e, planet.om, planet.w, planet.full_name)
-  }
-
-
+  } */
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
-
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);
   jupiter.planet.rotateY(0.005 * settings.acceleration);
@@ -626,8 +595,8 @@ async function animate() {
   composer.render();
 }
 
-//loadAsteroids('./asteroids/asteroidPack.glb', 1000, 130, 160, scene);
-//loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
+loadAsteroids('./asteroids/asteroidPack.glb', 1000, 130, 160, scene);
+loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
 animate();
 
 /* function setcoordinatesOrbit(a,e, planet){
@@ -676,7 +645,7 @@ async function setcoordinatesOrbit(a, e, W, w, planetKey) {
 
   // Actualizar la posición del planeta en la simulación 3D
   try {
-    planet.planet3d.position.set(x * 50, 0, y * 50); // Actualizar la posición 3D del planeta
+    planet.planet3d.position.set(x* 250, 0, y * 250);
   } catch (e) {
     console.log(e, planetKey); // Manejo de errores
   }
