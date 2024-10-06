@@ -643,43 +643,42 @@ function degreesToRadians(degrees) {
 }
 
 async function setcoordinatesOrbit(a, e, W, w, planetKey) {
-  // Orbital parameters for a planet
-  //let a = 5; // Semimajor axis
-  //let e = 0.1; // Eccentricity
   const planetsMap = {
     'Earth': earth,
     'Mars': mars,
     'Mercury': mercury,
     'Neptune': neptune,
     'Venus': venus
-  }
+  };
   let planet = planetsMap[planetKey];
   if (!planet) return;
 
-  let i = degreesToRadians(7); // Inclination in radians
-  let omega = degreesToRadians(w); // Argument of periapsis
-  let Omega = degreesToRadians(W); // Longitude of ascending node
+  let i = degreesToRadians(7); // Inclinación en radianes (puedes modificarla para cada planeta si es necesario)
+  let omega = degreesToRadians(w); // Argumento del periapsis
+  let Omega = degreesToRadians(W); // Longitud del nodo ascendente
 
-  // Calculate planet position in the orbit
-  theta += 0.01; // Increase the angle for orbital motion
-  const r = a * (1 - e * e) / (1 + e * Math.cos(theta)); // Radius
+  // Calcular la posición del planeta en la órbita
+  theta += degreesToRadians(0.01); // Incrementar el ángulo para el movimiento orbital
+  const r = a * (1 - e * e) / (1 + e * Math.cos(theta)); // Radio en función del ángulo y la excentricidad
   let x_prime = r * Math.cos(theta);
   let y_prime = r * Math.sin(theta);
   let z_prime = 0;
 
-  // Rotate according to orbital inclination, argument of periapsis, and node
+  // Rotar según la inclinación orbital, el argumento del periapsis y el nodo ascendente
   let x = x_prime * (Math.cos(Omega) * Math.cos(omega) - Math.sin(Omega) * Math.sin(omega) * Math.cos(i)) -
     y_prime * (Math.sin(Omega) * Math.cos(omega) + Math.cos(Omega) * Math.sin(omega) * Math.cos(i));
   let y = x_prime * (Math.cos(Omega) * Math.sin(omega) + Math.sin(Omega) * Math.cos(omega) * Math.cos(i)) -
     y_prime * (Math.sin(Omega) * Math.sin(omega) - Math.cos(Omega) * Math.cos(omega) * Math.cos(i));
   let z = x_prime * Math.sin(omega) * Math.sin(i) + y_prime * Math.cos(omega) * Math.sin(i);
-  console.log(x * 100, 0, y * 100)
 
-  // Update planet position
+  // Multiplicar las coordenadas por 50 para escalar en tu sistema de simulación (puedes ajustar este factor)
+  console.log(x * 100, 0, y * 100); 
+
+  // Actualizar la posición del planeta en la simulación 3D
   try {
-    planet.planet3d.position.set(x* 50, 0, y * 50);
+    planet.planet3d.position.set(x * 50, 0, y * 50); // Actualizar la posición 3D del planeta
   } catch (e) {
-    console.log(e, planetKey);
+    console.log(e, planetKey); // Manejo de errores
   }
 }
 
