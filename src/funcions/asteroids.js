@@ -1,5 +1,23 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import axios from 'axios';
+
+const apiUrl = 'http://localhost:3001/asteroids';  // Endpoint de tu servidor
+
+// Función para consumir el endpoint asteroids
+export async function fetchAsteroids(page = 1, limit = 10, full_name = '') {
+  try {
+    const response = await axios.get(apiUrl, {
+    });
+
+    // Procesar los datos recibidos
+    console.log('Asteroids data:', response.data);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching asteroids:', error);
+  }
+}
+
 
 const asteroids = [];
 
