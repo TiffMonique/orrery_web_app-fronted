@@ -444,6 +444,10 @@ pluto.planet.receiveShadow = true;
 
 
 
+// Variables para la animación
+let time = 0; // El tiempo, para avanzar sobre la órbita
+const centerX = 0; // Ajusta el centro de la órbita en X
+const centerZ = 0; // Ajusta el centro de la órbita en Z (plano XZ)
 
 function animate() {
 
@@ -457,9 +461,20 @@ function animate() {
   
   earth.planet.rotateY(0.005 * settings.acceleration);
   earth.Atmosphere.rotateY(0.001 * settings.acceleration);
-  earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
+  
+  //earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
 
-  earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
+  // Incrementamos el tiempo para avanzar en la órbita
+  time += 0.001 * settings.accelerationOrbit;
+
+  // Obtener la posición en la órbita usando el tiempo
+  const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
+
+  // Aplicar las coordenadas de la elipse a la posición del planeta
+  earth.planet3d.position.set(orbitPosition.x, orbitPosition.y, 0);
+  earth.planet3d.rotation.x = Math.PI / 2;
+
+  //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
   
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);

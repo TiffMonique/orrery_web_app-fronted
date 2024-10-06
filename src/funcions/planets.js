@@ -56,7 +56,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
     0                 // aRotation
   );
 
-  const pathPoints = orbitPath.getPoints(100);
+  const pathPoints = orbitPath.getPoints(100);  
   const orbitGeometry = new THREE.BufferGeometry().setFromPoints(pathPoints);
   const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.03 });
   const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
@@ -120,5 +120,5 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   }
   //add planet system to planet3d object and to the scene
   planet3d.add(planetSystem);
-  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, planetOrbit3d };
+  return { name, planet, planet3d, Atmosphere, moons, planetSystem, Ring, planetOrbit3d, orbitPath };
 }
