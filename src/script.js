@@ -83,6 +83,28 @@ composer.addPass(bloomPass);
 // ****** AMBIENT LIGHT ******
 console.log("Add the ambient light");
 var lightAmbient = new THREE.AmbientLight(0x222222, 6);
+
+
+function createHabitableZone(innerRadius,outerRadius, scene, color) {
+
+  const geometry = new THREE.RingGeometry(innerRadius * 100, outerRadius * 100, 64);
+  
+  const material = new THREE.MeshBasicMaterial({
+      color: color, 
+      side: THREE.DoubleSide, 
+      transparent: true,
+      opacity: 0.8
+  });
+
+  const habitableZone = new THREE.Mesh(geometry, material);
+  habitableZone.rotation.x = Math.PI / 2;
+  scene.add(habitableZone);
+}
+
+
+createHabitableZone( 0.85,1.37,  scene, 0x00ff00);
+createHabitableZone(0.45, 0.85, scene, 'red');
+createHabitableZone(1.37, 1.70, scene, 'blue');
 scene.add(lightAmbient);
 
 // ******  Star background  ******
@@ -347,16 +369,16 @@ const jupiterMoons = [
 ];
 
 // ******  PLANET CREATIONS  ******
-const mercury = new createPlanet('Mercury', 2.4, 40, 0, mercuryTexture, mercuryBump);
+const mercury = new createPlanet('Mercury', 2.4, 100 * 0.387, 0, mercuryTexture, mercuryBump);
 scene.add(mercury.planet3d);
 scene.add(mercury.planetOrbit3d);
-const venus = new createPlanet('Venus', 6.1, 65, 3, venusTexture, venusBump, null, venusAtmosphere);
+const venus = new createPlanet('Venus', 6.1, 100 * 0.723, 3, venusTexture, venusBump, null, venusAtmosphere);
 scene.add(venus.planet3d);
 scene.add(venus.planetOrbit3d);
-const earth = new createPlanet('Earth', 6.4, 90, 23, earthMaterial, null, null, earthAtmosphere, earthMoon);
+const earth = new createPlanet('Earth', 6.4, 100, 23, earthMaterial, null, null, earthAtmosphere, earthMoon);
 scene.add(earth.planet3d);
 scene.add(earth.planetOrbit3d);
-const mars = new createPlanet('Mars', 3.4, 115, 25, marsTexture, marsBump);
+const mars = new createPlanet('Mars', 3.4, 100 * 1.524, 25, marsTexture, marsBump);
 scene.add(mars.planet3d);
 scene.add(mars.planetOrbit3d);
 // Load Mars moons
@@ -373,27 +395,27 @@ marsMoons.forEach(moon => {
   });
 });
 
-const jupiter = new createPlanet('Jupiter', 69 / 4, 200, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
+const jupiter = new createPlanet('Jupiter', 69 / 4, 100 * 5.203, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
 scene.add(jupiter.planet3d);
 scene.add(jupiter.planetOrbit3d);
-const saturn = new createPlanet('Saturn', 58 / 4, 270, 26, saturnTexture, null, {
+const saturn = new createPlanet('Saturn', 58 / 4, 100 * 9.537, 26, saturnTexture, null, {
   innerRadius: 18,
   outerRadius: 29,
   texture: satRingTexture
 });
 scene.add(saturn.planet3d);
 scene.add(saturn.planetOrbit3d);
-const uranus = new createPlanet('Uranus', 25 / 4, 320, 82, uranusTexture, null, {
+const uranus = new createPlanet('Uranus', 25 / 4, 100 * 19.191, 82, uranusTexture, null, {
   innerRadius: 6,
   outerRadius: 8,
   texture: uraRingTexture
 });
 scene.add(uranus.planet3d);
 scene.add(uranus.planetOrbit3d);
-const neptune = new createPlanet('Neptune', 24 / 4, 340, 28, neptuneTexture);
+const neptune = new createPlanet('Neptune', 24 / 4, 100 * 30.069, 28, neptuneTexture);
 scene.add(neptune.planet3d);
 scene.add(neptune.planetOrbit3d);
-const pluto = new createPlanet('Pluto', 1, 350, 57, plutoTexture);
+const pluto = new createPlanet('Pluto', 1, 350, 100 * 39.069, plutoTexture);
 scene.add(pluto.planet3d);
 scene.add(pluto.planetOrbit3d);
 
