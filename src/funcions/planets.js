@@ -62,7 +62,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
   orbit.rotation.x = Math.PI / 2;
   //planetSystem.add(orbit);
-  planetOrbit3d.add(orbit);
+  //planetOrbit3d.add(orbit);
 
   //add ring
   if (ring) {

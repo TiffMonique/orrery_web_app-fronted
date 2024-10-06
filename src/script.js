@@ -224,10 +224,15 @@ sunMat = new THREE.MeshStandardMaterial({
   emissiveIntensity: settings.sunIntensity
 });
 const sun = new THREE.Mesh(sunGeom, sunMat);
-scene.add(sun);
+let foco = 1*(0.0167 + Math.cos(0));
+sun.position.x = foco*90;
+//sun.position.x = 40;
+//scene.add(sun);
 
 //point light in the sun
-const pointLight = new THREE.PointLight(0xFDFFD3, 1200, 400, 1.4);
+const pointLight = new THREE.PointLight(0xFDFFD3, 12000, 4000, 1.4);
+pointLight.position.x = foco*90;
+pointLight.position.y = 150;
 scene.add(pointLight);
 
 
@@ -446,15 +451,14 @@ pluto.planet.receiveShadow = true;
 
 // Variables para la animación
 let time = 0; // El tiempo, para avanzar sobre la órbita
-const centerX = 0; // Ajusta el centro de la órbita en X
-const centerZ = 0; // Ajusta el centro de la órbita en Z (plano XZ)
+let angle = 0;
 
 function animate() {
 
   //rotating planets around the sun and itself
   sun.rotateY(0.001 * settings.acceleration);
   mercury.planet.rotateY(0.001 * settings.acceleration);
-  mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
+  //mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
@@ -471,8 +475,22 @@ function animate() {
   const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
 
   // Aplicar las coordenadas de la elipse a la posición del planeta
-  earth.planet3d.position.set(orbitPosition.x, orbitPosition.y, 0);
-  earth.planet3d.rotation.x = Math.PI / 2;
+  //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
+  //earth.planet3d.rotation.z = Math.PI / 2;
+
+  // Renieri
+  //let x = (1*(1-(0.0167**2)))/(1+(0.0167*Math.cos(angle)));
+  setcoordinatesOrbit(1, 0.0167, earth);
+  setcoordinatesOrbit(0.387, 0.2056, mercury);
+  setcoordinatesOrbit(0.723, 0.0067, venus);
+
+  setcoordinatesOrbit(1.524, 0.0934, mars);
+  setcoordinatesOrbit(5.203, 0.0489, jupiter);
+  setcoordinatesOrbit(9.537, 0.0565, saturn);
+  setcoordinatesOrbit(19.191, 0.0463, uranus);
+  setcoordinatesOrbit(30.069, 0.01, neptune);
+  setcoordinatesOrbit(39.482, 0.2488, pluto);
+
 
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
   
@@ -573,14 +591,25 @@ function animate() {
     }
   }
 
+  // Update the controls
+  angle += 0.01;
+  if(angle > 2 * Math.PI) angle = 0;
+
   controls.update();
   requestAnimationFrame(animate);
   composer.render();
 }
 
-loadAsteroids('./asteroids/asteroidPack.glb', 1000, 130, 160, scene);
-loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
+//loadAsteroids('./asteroids/asteroidPack.glb', 1000, 130, 160, scene);
+//loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
 animate();
+
+function setcoordinatesOrbit(a,e, planet){
+  let x = a*(Math.cos(angle) - e);
+  let y = a*Math.sin(angle)*Math.sqrt(a-(e**2));
+  planet.planet3d.position.set(x*30, 0, y*30);
+  return {x, y};
+}
 
 window.addEventListener('mousemove', onMouseMove, false);
 window.addEventListener('mousedown', onDocumentMouseDown, false);
