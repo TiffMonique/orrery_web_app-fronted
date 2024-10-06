@@ -68,7 +68,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   // add orbit path
   const orbitPath = new THREE.EllipseCurve(
     0, 0,            // ax, aY
-    position, position + 50, // xRadius, yRadius
+    position, position, // xRadius, yRadius
     0, 2 * Math.PI,   // aStartAngle, aEndAngle
     false,            // aClockwise
     0                 // aRotation
@@ -80,7 +80,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
   orbit.rotation.x = Math.PI / 2;
   //planetSystem.add(orbit);
-  //planetOrbit3d.add(orbit);
+  planetOrbit3d.add(orbit);
 
   //add ring
   if (ring) {
@@ -138,7 +138,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   }
 
   // Labels
-
+  
 
 
 
