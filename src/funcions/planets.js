@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import planetData from '../data/planetData.json';
 import axios from 'axios';
+import { CSS2DRenderer, CSS2DObject } from 'three/examples/jsm/renderers/CSS2DRenderer';
 
 const apiUrl = 'http://localhost:3001/planets';  // Endpoint de tu servidor
 
@@ -138,9 +139,15 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   }
 
   // Labels
-  
+  const text = document.createElement( 'div' );
+  text.className = 'annotation';
+  text.textContent = 'MyLabel';
 
+  text.addEventListener( 'pointerenter', event => console.log( event ) );
 
+  const label = new CSS2DObject( text );
+
+  planetSystem.add( label );
 
   //add planet system to planet3d object and to the scene
   planet3d.add(planetSystem);

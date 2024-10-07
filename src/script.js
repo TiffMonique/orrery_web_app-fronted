@@ -94,7 +94,7 @@ function createHabitableZone(innerRadius,outerRadius, scene, color) {
       color: color, 
       side: THREE.DoubleSide, 
       transparent: true,
-      opacity: 0.8
+      opacity: 0.03
   });
 
   const habitableZone = new THREE.Mesh(geometry, material);
@@ -481,8 +481,10 @@ async function animate() {
 
   //rotating planets around the sun and itself
   sun.rotateY(0.001 * settings.acceleration);
+  
   mercury.planet.rotateY(0.001 * settings.acceleration);
   mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
+  
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
@@ -513,14 +515,19 @@ async function animate() {
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);
+  
   jupiter.planet.rotateY(0.005 * settings.acceleration);
   jupiter.planet3d.rotateY(0.0003 * settings.accelerationOrbit);
+  
   saturn.planet.rotateY(0.01 * settings.acceleration);
   saturn.planet3d.rotateY(0.0002 * settings.accelerationOrbit);
+  
   uranus.planet.rotateY(0.005 * settings.acceleration);
   uranus.planet3d.rotateY(0.0001 * settings.accelerationOrbit);
+  
   neptune.planet.rotateY(0.005 * settings.acceleration);
   neptune.planet3d.rotateY(0.00008 * settings.accelerationOrbit);
+  
   pluto.planet.rotateY(0.001 * settings.acceleration)
   pluto.planet3d.rotateY(0.00006 * settings.accelerationOrbit)
 
@@ -618,7 +625,7 @@ async function animate() {
 }
 
 loadAsteroids('./asteroids/asteroidPack.glb', 1000, 210, 250, scene);
-loadAsteroids('./asteroids/asteroidPack.glb', 3000, 352, 370, scene);
+loadAsteroids('./asteroids/asteroidPack.glb', 3000, 290, 330, scene);
 animate();
 
 /* function setcoordinatesOrbit(a,e, planet){
