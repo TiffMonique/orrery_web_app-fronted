@@ -209,10 +209,7 @@ function identifyPlanet(clickedObject) {
   } else if (clickedObject.material === neptune.planet.material) {
     offset = 20;
     return neptune;
-  } else if (clickedObject.material === pluto.planet.material) {
-    offset = 10;
-    return pluto;
-  }
+  } 
 
   return null;
 }
@@ -429,14 +426,14 @@ const neptune = new createPlanet('Neptune', 24 / 4, 100 * 30.069, 28, 1.8, neptu
 scene.add(neptune.planet3d);
 scene.add(neptune.planetOrbit3d);
 
-const pluto = new createPlanet('Pluto', 1, 350, 100 * 39.069, 17.1, plutoTexture);
-scene.add(pluto.planet3d);
-scene.add(pluto.planetOrbit3d);
+// const pluto = new createPlanet('Pluto', 24 / 4, 350, 100 * 100, 17.1, plutoTexture);
+// scene.add(pluto.planet3d);
+// scene.add(pluto.planetOrbit3d);
 
 // Array of planets and atmospheres for raycasting
 const raycastTargets = [
   mercury.planet, venus.planet, venus.Atmosphere, earth.planet, earth.Atmosphere,
-  mars.planet, jupiter.planet, saturn.planet, uranus.planet, neptune.planet, pluto.planet
+  mars.planet, jupiter.planet, saturn.planet, uranus.planet, neptune.planet, 
 ];
 
 // ******  SHADOWS  ******
@@ -478,7 +475,7 @@ saturn.planet.receiveShadow = true;
 saturn.Ring.receiveShadow = true;
 uranus.planet.receiveShadow = true;
 neptune.planet.receiveShadow = true;
-pluto.planet.receiveShadow = true;
+// pluto.planet.receiveShadow = true;
 
 // Variables para la animación
 let time = 0; // El tiempo, para avanzar sobre la órbita
@@ -536,8 +533,8 @@ async function animate() {
   neptune.planet.rotateY(0.005 * settings.acceleration);
   neptune.planet3d.rotateY((1/164.79) * 0.01*settings.accelerationOrbit);
   
-  pluto.planet.rotateY(0.001 * settings.acceleration)
-  pluto.planet3d.rotateY((1/164.79)* 0.01*settings.accelerationOrbit)
+  // pluto.planet.rotateY(0.001 * settings.acceleration)
+  // pluto.planet3d.rotateY((1/164.79)* 0.01*settings.accelerationOrbit)
 
   // Animate Earth's moon
   if (earth.moons) {
