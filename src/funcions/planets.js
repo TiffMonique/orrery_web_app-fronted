@@ -64,7 +64,8 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   let Atmosphere;
   let Ring;
   planet.position.x = position;
-  planet.rotation.z = tilt * Math.PI / 180;
+  //planet3d.rotateZ(tilt * Math.PI / 180);
+   planet.rotation.z = tilt * Math.PI / 180;
 
   // add orbit path
   const orbitPath = new THREE.EllipseCurve(

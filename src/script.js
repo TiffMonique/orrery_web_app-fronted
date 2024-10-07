@@ -607,7 +607,7 @@ async function animate() {
   // ******  ZOOM IN/OUT  ******
   if (isMovingTowardsPlanet) {
     // Smoothly move the camera towards the target position
-    camera.position.lerp(targetCameraPosition, 0.03);
+    camera.position.lerp(targetCameraPosition, 0.3);
 
     // Check if the camera is close to the target position
     if (camera.position.distanceTo(targetCameraPosition) < 1) {
@@ -616,7 +616,7 @@ async function animate() {
 
     }
   } else if (isZoomingOut) {
-    camera.position.lerp(zoomOutTargetPosition, 0.05);
+    camera.position.lerp(zoomOutTargetPosition, 0.5);
 
     if (camera.position.distanceTo(zoomOutTargetPosition) < 1) {
       isZoomingOut = false;
