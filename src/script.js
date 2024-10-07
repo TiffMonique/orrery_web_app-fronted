@@ -36,7 +36,7 @@ import uraRingTexture from '/images/uranus_ring.png';
 import neptuneTexture from '/images/neptune.jpg';
 import plutoTexture from '/images/plutomap.jpg';
 import { createPlanet, showPlanetInfo, fetchPlanets } from './funcions/planets';
-import { loadAsteroids } from './funcions/asteroids';
+import { loadAsteroids, loadAsteroidsRings } from './funcions/asteroids';
 let theta = 0;
 
 // ******  SETUP  ******
@@ -44,7 +44,7 @@ console.log("Create the scene");
 const scene = new THREE.Scene();
 
 console.log("Create a perspective projection camera");
-var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 5000);
+var camera = new THREE.PerspectiveCamera(100, window.innerWidth / window.innerHeight, 0.1, 7000);
 camera.position.set(-175, 115, 5);
 
 console.log("Create the renderer");
@@ -83,7 +83,7 @@ composer.addPass(bloomPass);
 
 // ****** AMBIENT LIGHT ******
 console.log("Add the ambient light");
-var lightAmbient = new THREE.AmbientLight(0x222222, 40);
+var lightAmbient = new THREE.AmbientLight(0x222222, 60);
 
 
 function createHabitableZone(innerRadius,outerRadius, scene, color) {
@@ -379,12 +379,15 @@ const jupiterMoons = [
 const mercury = new createPlanet('Mercury', 2.4, 100 * 0.387, 0, mercuryTexture, mercuryBump);
 scene.add(mercury.planet3d);
 scene.add(mercury.planetOrbit3d);
+
 const venus = new createPlanet('Venus', 6.1, 100 * 0.723, 3, venusTexture, venusBump, null, venusAtmosphere);
 scene.add(venus.planet3d);
 scene.add(venus.planetOrbit3d);
+
 const earth = new createPlanet('Earth', 6.4, 100, 23, earthMaterial, null, null, earthAtmosphere, earthMoon);
 scene.add(earth.planet3d);
 scene.add(earth.planetOrbit3d);
+
 const mars = new createPlanet('Mars', 3.4, 100 * 1.524, 25, marsTexture, marsBump);
 scene.add(mars.planet3d);
 scene.add(mars.planetOrbit3d);
@@ -405,6 +408,7 @@ marsMoons.forEach(moon => {
 const jupiter = new createPlanet('Jupiter', 69 / 4, 100 * 5.203, 3, jupiterTexture, null, null, null, jupiterMoons, loadTexture);
 scene.add(jupiter.planet3d);
 scene.add(jupiter.planetOrbit3d);
+
 const saturn = new createPlanet('Saturn', 58 / 4, 100 * 9.537, 26, saturnTexture, null, {
   innerRadius: 18,
   outerRadius: 29,
@@ -412,6 +416,7 @@ const saturn = new createPlanet('Saturn', 58 / 4, 100 * 9.537, 26, saturnTexture
 });
 scene.add(saturn.planet3d);
 scene.add(saturn.planetOrbit3d);
+
 const uranus = new createPlanet('Uranus', 25 / 4, 100 * 19.191, 82, uranusTexture, null, {
   innerRadius: 6,
   outerRadius: 8,
@@ -419,9 +424,11 @@ const uranus = new createPlanet('Uranus', 25 / 4, 100 * 19.191, 82, uranusTextur
 });
 scene.add(uranus.planet3d);
 scene.add(uranus.planetOrbit3d);
+
 const neptune = new createPlanet('Neptune', 24 / 4, 100 * 30.069, 28, neptuneTexture);
 scene.add(neptune.planet3d);
 scene.add(neptune.planetOrbit3d);
+
 const pluto = new createPlanet('Pluto', 1, 350, 100 * 39.069, plutoTexture);
 scene.add(pluto.planet3d);
 scene.add(pluto.planetOrbit3d);
@@ -451,6 +458,7 @@ earth.moons.forEach(moon => {
   moon.mesh.castShadow = true;
   moon.mesh.receiveShadow = true;
 });
+
 mercury.planet.castShadow = true;
 mercury.planet.receiveShadow = true;
 venus.planet.castShadow = true;
@@ -464,6 +472,7 @@ jupiter.moons.forEach(moon => {
   moon.mesh.castShadow = true;
   moon.mesh.receiveShadow = true;
 });
+
 saturn.planet.castShadow = true;
 saturn.planet.receiveShadow = true;
 saturn.Ring.receiveShadow = true;
@@ -484,6 +493,7 @@ async function animate() {
   
   mercury.planet.rotateY(0.001 * settings.acceleration);
   mercury.planet3d.rotateY((1/0.241)* 0.01 *settings.accelerationOrbit);
+  
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
   venus.planet3d.rotateY((1/0.615)* 0.01 *settings.accelerationOrbit);
@@ -497,7 +507,6 @@ async function animate() {
 
   // Obtener la posición en la órbita usando el tiempo
   const orbitPosition = earth.orbitPath.getPoint(time % 1); // "time % 1" asegura que se reinicie al completar la órbita
-
 
   // Aplicar las coordenadas de la elipse a la posición del planeta
   //earth.planet3d.position.set(orbitPosition.y/2, 0, orbitPosition.x/2);
@@ -514,14 +523,19 @@ async function animate() {
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
   mars.planet.rotateY(0.01 * settings.acceleration);
   mars.planet3d.rotateY((1/1.881) * 0.01*settings.accelerationOrbit);
+  
   jupiter.planet.rotateY(0.005 * settings.acceleration);
   jupiter.planet3d.rotateY((1/11.862) * 0.01*settings.accelerationOrbit);
+  
   saturn.planet.rotateY(0.01 * settings.acceleration);
   saturn.planet3d.rotateY(0.0001 * (1/113.72) * 0.01*settings.accelerationOrbit);
+  
   uranus.planet.rotateY(29.457 *  settings.acceleration);
   uranus.planet3d.rotateY(0.0001 * (1/74.0)* 0.01*settings.accelerationOrbit);
+  
   neptune.planet.rotateY(0.005 * settings.acceleration);
-  neptune.planet3d.rotateY(84.011 * 0.01*settings.accelerationOrbit);
+  neptune.planet3d.rotateY((1/164.79) * 0.01*settings.accelerationOrbit);
+  
   pluto.planet.rotateY(0.001 * settings.acceleration)
   pluto.planet3d.rotateY((1/164.79)* 0.01*settings.accelerationOrbit)
 
@@ -618,8 +632,22 @@ async function animate() {
   composer.render();
 }
 
-loadAsteroids('./asteroids/asteroidPack.glb', 1000, 210, 250, scene);
-loadAsteroids('./asteroids/asteroidPack.glb', 3000, 290, 330, scene);
+/* loadAsteroids('./asteroids/asteroidPack.glb', 1000, 210, 250, scene);
+loadAsteroids('./asteroids/asteroidPack.glb', 3000, 290, 330, scene); */
+
+//Atira
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 30, 100, scene);
+//Aten
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 90, 95, scene);//Tierra de 95-105
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 105, 110, scene);
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 110, 160, scene);
+//Amor
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 110, 410, scene);
+//
+loadAsteroids('./asteroids/asteroidPack.glb', 1000, 210, 330, scene);
+
+loadAsteroids('./asteroids/asteroidPack.glb', 500, 410, 800, scene);
+
 animate();
 
 /* function setcoordinatesOrbit(a,e, planet){
@@ -682,6 +710,16 @@ window.addEventListener('resize', function () {
   renderer.setSize(window.innerWidth, window.innerHeight);
   composer.setSize(window.innerWidth, window.innerHeight);
 });
+
+var info = document.getElementById('planetInfo');
+var name = document.getElementById('planetName');
+var details = document.getElementById('planetDetails');
+
+name.innerText = "Orbitscape";
+details.innerText = "\nEl proyecto implica el desarrollo de una aplicación web interactiva que represente visualmente los cuerpos celestes de nuestro sistema solar, incluidos los planetas, los asteroides cercanos a la Tierra (NEA), los cometas cercanos a la Tierra (NEC) y los asteroides potencialmente peligrosos (PHA).\n\nZona de Habitabilidad (color verde):\nLa zona de habitabilidad es la región alrededor de una estrella donde las condiciones son adecuadas para que exista agua líquida en la superficie de un planeta.\n" 
+
+info.style.display = 'block';
+
 /* 
 import * as math  from 'mathjs'
 

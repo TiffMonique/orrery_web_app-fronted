@@ -23,6 +23,7 @@ const asteroids = [];
 
 export function loadAsteroids(path, numberOfAsteroids, minOrbitRadius, maxOrbitRadius, scene) {
   const loader = new GLTFLoader();
+  const asteroids3d = new THREE.Object3D;
   loader.load(path, function (gltf) {
     gltf.scene.traverse(function (child) {
       if (child.isMesh) {
@@ -36,6 +37,34 @@ export function loadAsteroids(path, numberOfAsteroids, minOrbitRadius, maxOrbitR
           child.receiveShadow = true;
           asteroid.position.set(x, y, z);
           asteroid.scale.setScalar(THREE.MathUtils.randFloat(0.8, 1.2));
+          asteroids3d.add(asteroid);
+          scene.add(asteroids3d);
+          //scene.add(asteroid);
+          asteroids.push(asteroid);
+        }
+      }
+    });
+  }, undefined, function (error) {
+    console.error('An error happened', error);
+  });
+  
+}
+
+export function loadAsteroidsRings(path, numberOfAsteroids, minOrbitRadius, maxOrbitRadius, scene) {
+  const loader = new GLTFLoader();
+  loader.load(path, function (gltf) {
+    gltf.scene.traverse(function (child) {
+      if (child.isMesh) {
+        for (let i = 0; i < numberOfAsteroids/12; i++) {
+          const asteroid = child.clone();
+          const orbitRadius = THREE.MathUtils.randFloat(minOrbitRadius, maxOrbitRadius);
+          const angle = Math.random() * Math.PI * 2;
+          const x = orbitRadius * Math.cos(angle);
+          const y = 0;
+          const z = orbitRadius * Math.sin(angle);
+          child.receiveShadow = true;
+          asteroid.position.set(x, y, z);
+          asteroid.scale.setScalar(THREE.MathUtils.randFloat(0.05, 0.1));
           scene.add(asteroid);
           asteroids.push(asteroid);
         }
