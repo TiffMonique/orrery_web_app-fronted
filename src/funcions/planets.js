@@ -35,7 +35,7 @@ export function showPlanetInfo(planet) {
 const loadTexture = new THREE.TextureLoader();
 
 // ******  PLANET CREATION FUNCTION  ******
-export function createPlanet(planetName, size, position, tilt, texture, bump, ring, atmosphere, moons) {
+export function createPlanet(planetName, size, position, tilt, tiltOrbit, texture, bump, ring, atmosphere, moons) {
 
   let material;
   if (texture instanceof THREE.Material) {
@@ -64,8 +64,8 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   let Atmosphere;
   let Ring;
   planet.position.x = position;
-  //planet3d.rotateZ(tilt * Math.PI / 180);
-   planet.rotation.z = tilt * Math.PI / 180;
+  planet3d.rotateZ(tiltOrbit * Math.PI / 180);
+  //planet.rotation.z = tilt * Math.PI / 180;
 
   // add orbit path
   const orbitPath = new THREE.EllipseCurve(
@@ -81,6 +81,7 @@ export function createPlanet(planetName, size, position, tilt, texture, bump, ri
   const orbitMaterial = new THREE.LineBasicMaterial({ color: 0xFFFFFF, transparent: true, opacity: 0.03 });
   const orbit = new THREE.LineLoop(orbitGeometry, orbitMaterial);
   orbit.rotation.x = Math.PI / 2;
+  planetOrbit3d.rotation.z = tiltOrbit * Math.PI / 180;
   //planetSystem.add(orbit);
   planetOrbit3d.add(orbit);
 
