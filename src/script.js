@@ -636,13 +636,13 @@ async function animate() {
 loadAsteroids('./asteroids/asteroidPack.glb', 3000, 290, 330, scene); */
 
 //Atira
-loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 30, 100, scene);
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 1500, 30, 100, scene);
 //Aten
-loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 90, 95, scene);//Tierra de 95-105
-loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 105, 110, scene);
-loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 110, 160, scene);
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 1500, 90, 95, scene);//Tierra de 95-105
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 1500, 105, 110, scene);
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 1500, 110, 160, scene);
 //Amor
-loadAsteroidsRings('./asteroids/asteroidPack.glb', 2000, 110, 410, scene);
+loadAsteroidsRings('./asteroids/asteroidPack.glb', 1500, 110, 410, scene);
 //
 loadAsteroids('./asteroids/asteroidPack.glb', 1000, 210, 330, scene);
 
@@ -711,14 +711,18 @@ window.addEventListener('resize', function () {
   composer.setSize(window.innerWidth, window.innerHeight);
 });
 
-var info = document.getElementById('planetInfo');
-var name = document.getElementById('planetName');
-var details = document.getElementById('planetDetails');
+setTimeout(() => {
+  var info = document.getElementById('planetInfo');
+  var name = document.getElementById('planetName');
+  var details = document.getElementById('planetDetails');
 
-name.innerText = "Orbitscape";
-details.innerText = "\nEl proyecto implica el desarrollo de una aplicación web interactiva que represente visualmente los cuerpos celestes de nuestro sistema solar, incluidos los planetas, los asteroides cercanos a la Tierra (NEA), los cometas cercanos a la Tierra (NEC) y los asteroides potencialmente peligrosos (PHA).\n\nZona de Habitabilidad (color verde):\nLa zona de habitabilidad es la región alrededor de una estrella donde las condiciones son adecuadas para que exista agua líquida en la superficie de un planeta.\n" 
+  name.innerText = "Orbitscape";
+  details.innerText = "\nEl proyecto implica el desarrollo de una aplicación web interactiva que represente visualmente los cuerpos celestes de nuestro sistema solar, incluidos los planetas, los asteroides cercanos a la Tierra (NEA), los cometas cercanos a la Tierra (NEC) y los asteroides potencialmente peligrosos (PHA).\n\nZona de Habitabilidad (color verde):\nLa zona de habitabilidad es la región alrededor de una estrella donde las condiciones son adecuadas para que exista agua líquida en la superficie de un planeta.\n" 
 
-info.style.display = 'block';
+  info.style.display = 'block';
+}, 1500);
+
+
 
 /* 
 import * as math  from 'mathjs'
