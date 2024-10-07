@@ -483,15 +483,14 @@ async function animate() {
   sun.rotateY(0.001 * settings.acceleration);
   
   mercury.planet.rotateY(0.001 * settings.acceleration);
-  mercury.planet3d.rotateY(0.004 * settings.accelerationOrbit);
-  
+  mercury.planet3d.rotateY((1/0.241)* 0.01 *settings.accelerationOrbit);
   venus.planet.rotateY(0.0005 * settings.acceleration)
   venus.Atmosphere.rotateY(0.0005 * settings.acceleration);
-  venus.planet3d.rotateY(0.0006 * settings.accelerationOrbit);
+  venus.planet3d.rotateY((1/0.615)* 0.01 *settings.accelerationOrbit);
 
   earth.planet.rotateY(0.005 * settings.acceleration);
   earth.Atmosphere.rotateY(0.001 * settings.acceleration);
-  earth.planet3d.rotateY(0.001 * settings.accelerationOrbit);
+  earth.planet3d.rotateY((0.01) *settings.accelerationOrbit);
 
   // Incrementamos el tiempo para avanzar en la órbita
   time += 0.001 * settings.accelerationOrbit;
@@ -514,22 +513,17 @@ async function animate() {
   } */
   //earth.planet.position.x = 90 * Math.cos(0.001 * settings.acceleration);
   mars.planet.rotateY(0.01 * settings.acceleration);
-  mars.planet3d.rotateY(0.0007 * settings.accelerationOrbit);
-  
+  mars.planet3d.rotateY((1/1.881) * 0.01*settings.accelerationOrbit);
   jupiter.planet.rotateY(0.005 * settings.acceleration);
-  jupiter.planet3d.rotateY(0.0003 * settings.accelerationOrbit);
-  
+  jupiter.planet3d.rotateY((1/11.862) * 0.01*settings.accelerationOrbit);
   saturn.planet.rotateY(0.01 * settings.acceleration);
-  saturn.planet3d.rotateY(0.0002 * settings.accelerationOrbit);
-  
-  uranus.planet.rotateY(0.005 * settings.acceleration);
-  uranus.planet3d.rotateY(0.0001 * settings.accelerationOrbit);
-  
+  saturn.planet3d.rotateY(0.0001 * (1/113.72) * 0.01*settings.accelerationOrbit);
+  uranus.planet.rotateY(29.457 *  settings.acceleration);
+  uranus.planet3d.rotateY(0.0001 * (1/74.0)* 0.01*settings.accelerationOrbit);
   neptune.planet.rotateY(0.005 * settings.acceleration);
-  neptune.planet3d.rotateY(0.00008 * settings.accelerationOrbit);
-  
+  neptune.planet3d.rotateY(84.011 * 0.01*settings.accelerationOrbit);
   pluto.planet.rotateY(0.001 * settings.acceleration)
-  pluto.planet3d.rotateY(0.00006 * settings.accelerationOrbit)
+  pluto.planet3d.rotateY((1/164.79)* 0.01*settings.accelerationOrbit)
 
   // Animate Earth's moon
   if (earth.moons) {
